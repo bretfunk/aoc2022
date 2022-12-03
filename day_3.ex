@@ -45,14 +45,21 @@ defmodule AOC.DayThree do
 
   def letter_to_number(letter) do
     if letter == String.upcase(letter) do
-      <<discount>> = "A"
-      <<letter>> = letter
-      letter - discount + 27
+      letter
+      |> letter_to_ascii()
+      |> Kernel.-(letter_to_ascii("A"))
+      |> Kernel.+(27)
     else
-      <<discount>> = "a"
-      <<letter>> = letter
-      letter - discount + 1
+      letter
+      |> letter_to_ascii()
+      |> Kernel.-(letter_to_ascii("a"))
+      |> Kernel.+(1)
     end
+  end
+
+  def letter_to_ascii(letter) do
+    <<letter>> = letter
+    letter
   end
 end
 
