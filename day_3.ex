@@ -18,7 +18,6 @@ defmodule AOC.DayThree do
       |> letter_to_number()
     end)
     |> Enum.sum()
-    |> IO.inspect()
   end
 
   def problem_two() do
@@ -36,16 +35,14 @@ defmodule AOC.DayThree do
       |> letter_to_number()
     end)
     |> Enum.sum()
-    |> IO.inspect()
   end
 
   def split_in_half(string) do
-    half_length =
-      string
-      |> String.length()
-      |> Kernel.div(2)
-
-    [String.slice(string, 0..(half_length - 1)), String.slice(string, (half_length * -1)..-1)]
+    string
+    |> String.length()
+    |> Kernel.div(2)
+    |> then(&String.split_at(string, &1))
+    |> Tuple.to_list()
   end
 
   def find_duplicates(strings) when is_list(strings) do
@@ -63,12 +60,12 @@ defmodule AOC.DayThree do
     if letter == String.upcase(letter) do
       letter
       |> letter_to_ascii()
-      |> Kernel.-(letter_to_ascii("A"))
+      |> Integer.mod(?A)
       |> Kernel.+(27)
     else
       letter
       |> letter_to_ascii()
-      |> Kernel.-(letter_to_ascii("a"))
+      |> Integer.mod(?a)
       |> Kernel.+(1)
     end
   end
@@ -77,7 +74,19 @@ defmodule AOC.DayThree do
     <<letter>> = letter
     letter
   end
+
+  def run(:one) do
+    res = AOC.DayThree.problem_one()
+    target = if @testing, do: 157, else: 7872
+    IO.puts("#{res} - #{if res == target, do: "✅", else: "❌"}")
+  end
+
+  def run(:two) do
+    res = AOC.DayThree.problem_two()
+    target = if @testing, do: 70, else: 2497
+    IO.puts("#{res} - #{if res == target, do: "✅", else: "❌"}")
+  end
 end
 
-# AOC.DayThree.problem_one()
-AOC.DayThree.problem_two()
+AOC.DayThree.run(:one)
+AOC.DayThree.run(:two)
