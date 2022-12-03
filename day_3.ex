@@ -12,7 +12,8 @@ defmodule AOC.DayThree do
     |> Enum.map(fn line ->
       [string_1, string_2] = split_in_half(line)
 
-      find_duplicate(string_1, string_2)
+      string_1
+      |> find_duplicate(string_2)
       |> letter_to_number()
     end)
     |> Enum.sum()
@@ -29,10 +30,15 @@ defmodule AOC.DayThree do
   end
 
   def find_duplicate(string_1, string_2) do
+    set_2 =
+      string_2
+      |> String.codepoints()
+      |> MapSet.new()
+
     string_1
     |> String.codepoints()
     |> MapSet.new()
-    |> MapSet.intersection(MapSet.new(String.codepoints(string_2)))
+    |> MapSet.intersection(set_2)
     |> Enum.into([])
     |> List.first()
   end
