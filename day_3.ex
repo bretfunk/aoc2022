@@ -13,10 +13,9 @@ defmodule AOC.DayThree do
       [string_1, string_2] = split_in_half(line)
 
       find_duplicate(string_1, string_2)
+      |> letter_to_number()
     end)
-    |> Enum.reduce(0, fn letter, acc ->
-      letter_to_number(letter) + acc
-    end)
+    |> Enum.sum()
     |> IO.inspect()
   end
 
@@ -40,13 +39,13 @@ defmodule AOC.DayThree do
 
   def letter_to_number(letter) do
     if letter == String.upcase(letter) do
-      <<subtracting_from>> = "A"
+      <<discount>> = "A"
       <<letter>> = letter
-      letter - subtracting_from + 27
+      letter - discount + 27
     else
-      <<subtracting_from>> = "a"
+      <<discount>> = "a"
       <<letter>> = letter
-      letter - subtracting_from + 1
+      letter - discount + 1
     end
   end
 end
