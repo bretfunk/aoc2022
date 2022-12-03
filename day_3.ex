@@ -4,16 +4,35 @@ defmodule AOC.DayThree do
   @real_file "day_3.txt"
 
   def problem_one() do
+    IO.puts("Day 3 - Problem 1")
     file = if(@testing, do: @test_file, else: @real_file)
 
     file
     |> File.read!()
     |> String.split("\n", trim: true)
     |> Enum.map(fn line ->
-      [string_1, string_2] = split_in_half(line)
+      line
+      |> split_in_half()
+      |> find_duplicates()
+      |> List.first()
+      |> letter_to_number()
+    end)
+    |> Enum.sum()
+    |> IO.inspect()
+  end
 
-      string_1
-      |> find_duplicate(string_2)
+  def problem_two() do
+    IO.puts("Day 3 - Problem 2")
+    file = if(@testing, do: @test_file, else: @real_file)
+
+    file
+    |> File.read!()
+    |> String.split("\n", trim: true)
+    |> Enum.chunk_every(3)
+    |> Enum.map(&find_duplicates/1)
+    |> Enum.map(fn dups ->
+      dups
+      |> List.first()
       |> letter_to_number()
     end)
     |> Enum.sum()
@@ -29,18 +48,15 @@ defmodule AOC.DayThree do
     [String.slice(string, 0..(half_length - 1)), String.slice(string, (half_length * -1)..-1)]
   end
 
-  def find_duplicate(string_1, string_2) do
-    set_2 =
-      string_2
+  def find_duplicates(strings) when is_list(strings) do
+    strings
+    |> Enum.map(fn string ->
+      string
       |> String.codepoints()
       |> MapSet.new()
-
-    string_1
-    |> String.codepoints()
-    |> MapSet.new()
-    |> MapSet.intersection(set_2)
+    end)
+    |> Enum.reduce(&MapSet.intersection(&1, &2))
     |> Enum.into([])
-    |> List.first()
   end
 
   def letter_to_number(letter) do
@@ -63,4 +79,5 @@ defmodule AOC.DayThree do
   end
 end
 
-AOC.DayThree.problem_one()
+# AOC.DayThree.problem_one()
+AOC.DayThree.problem_two()
