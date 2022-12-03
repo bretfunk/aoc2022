@@ -32,7 +32,7 @@ defmodule AOC.DayTwo do
   end
 
   def problem_two do
-    IO.puts("Day 2 problem 2")
+    IO.puts("Day 2 - Problem 2")
 
     file()
     |> File.read!()
@@ -69,7 +69,7 @@ defmodule AOC.DayTwo do
   def letter_to_number("Y"), do: 1
   def letter_to_number("Z"), do: 2
 
-  def outcome(opponent, you) when opponent == you, do: :draw
+  def outcome(x, x), do: :draw
   def outcome(0, 2), do: :lose
   def outcome(0, 1), do: :win
   def outcome(1, 0), do: :lose
@@ -97,4 +97,5 @@ defmodule AOC.DayTwo do
   end
 end
 
+AOC.DayTwo.run(:one)
 AOC.DayTwo.run(:two)
