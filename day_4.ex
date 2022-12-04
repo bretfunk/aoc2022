@@ -1,5 +1,5 @@
 defmodule AOC.DayFour do
-  @testing false
+  @testing true
   @test_file "day_4_test.txt"
   @real_file "day_4.txt"
 
@@ -12,8 +12,8 @@ defmodule AOC.DayFour do
     |> File.read!()
     |> String.split("\n", trim: true)
     |> Enum.map(&String.split(&1, ","))
-    |> Enum.map(fn [range_1, range_2] -> [range_to_nums(range_1), range_to_nums(range_2)] end)
-    |> Enum.filter(fn [range_1, range_2] -> complete_overlap?(range_1, range_2) end)
+    |> Enum.map(fn x -> Enum.map(x, &range_to_nums/1) end)
+    |> Enum.filter(&complete_overlap?/1)
     |> Enum.count()
   end
 
@@ -24,12 +24,12 @@ defmodule AOC.DayFour do
     |> File.read!()
     |> String.split("\n", trim: true)
     |> Enum.map(&String.split(&1, ","))
-    |> Enum.map(fn [range_1, range_2] -> [range_to_nums(range_1), range_to_nums(range_2)] end)
-    |> Enum.filter(fn [range_1, range_2] -> partial_overlap?(range_1, range_2) end)
+    |> Enum.map(fn x -> Enum.map(x, &range_to_nums/1) end)
+    |> Enum.filter(&partial_overlap?/1)
     |> Enum.count()
   end
 
-  def partial_overlap?({range_1_start, range_1_end}, {range_2_start, range_2_end}) do
+  def partial_overlap?([{range_1_start, range_1_end}, {range_2_start, range_2_end}]) do
     cond do
       range_1_end >= range_2_start and range_1_end <= range_2_end -> true
       range_2_end >= range_1_start and range_2_end <= range_1_end -> true
@@ -37,7 +37,7 @@ defmodule AOC.DayFour do
     end
   end
 
-  def complete_overlap?({range_1_start, range_1_end}, {range_2_start, range_2_end}) do
+  def complete_overlap?([{range_1_start, range_1_end}, {range_2_start, range_2_end}]) do
     cond do
       range_1_start <= range_2_start and range_1_end >= range_2_end -> true
       range_2_start <= range_1_start and range_2_end >= range_1_end -> true
