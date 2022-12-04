@@ -12,7 +12,7 @@ defmodule AOC.DayFour do
     |> File.read!()
     |> String.split("\n", trim: true)
     |> Enum.map(&String.split(&1, ","))
-    |> Enum.map(fn x -> Enum.map(x, &range_to_nums/1) end)
+    |> Enum.map(fn [one, two] -> [range_to_nums(one), range_to_nums(two)] end)
     |> Enum.filter(&complete_overlap?/1)
     |> Enum.count()
   end
@@ -24,7 +24,7 @@ defmodule AOC.DayFour do
     |> File.read!()
     |> String.split("\n", trim: true)
     |> Enum.map(&String.split(&1, ","))
-    |> Enum.map(fn x -> Enum.map(x, &range_to_nums/1) end)
+    |> Enum.map(fn [one, two] -> [range_to_nums(one), range_to_nums(two)] end)
     |> Enum.filter(&partial_overlap?/1)
     |> Enum.count()
   end
