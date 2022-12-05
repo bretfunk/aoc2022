@@ -1,5 +1,5 @@
 defmodule AOC.DayFive do
-  @testing true
+  @testing false
   @test_file "day_5_test.txt"
   @real_file "day_5.txt"
 
@@ -10,16 +10,18 @@ defmodule AOC.DayFive do
     [stack, moves] = file() |> File.read!() |> String.split("\n\n", trim: true)
 
     moves = moves_to_tuple_instructions(moves)
-    stack = [[] | stacks_to_list_of_lists(stack)]
 
-    Enum.reduce(moves, stack, fn move, stack -> move(stack, move) end)
+    stack =
+      [[] | stacks_to_list_of_lists(stack)]
+      |> Kernel.++(List.duplicate([], 30))
+
+    Enum.reduce(moves, stack, fn move, stack -> move_one_by_one(stack, move) end)
     |> Enum.map(&List.last/1)
     |> Enum.filter(fn s -> not is_nil(s) end)
     |> List.to_string()
   end
 
-  def move(original_stack, {quantity, from, to} = move) do
-    IO.inspect([original_stack, move], label: "move")
+  def move_one_by_one(original_stack, {quantity, from, to}) do
     from_col = Enum.at(original_stack, from)
 
     {to_move, new_from_col} = List.pop_at(from_col, -1)
@@ -34,24 +36,44 @@ defmodule AOC.DayFive do
     quantity = quantity - 1
 
     if quantity == 0 do
-      IO.inspect(new_stack, label: "new stack")
       new_stack
     else
-      move(new_stack, {quantity, from, to})
+      move_one_by_one(new_stack, {quantity, from, to})
     end
   end
 
-  def problem_two() do
-    IO.puts("Day 5, Problem 1")
-    "X"
+  def move_all(original_stack, {quantity, from, to} = move) do
+    from_col = Enum.at(original_stack, from)
+
+    to_move = Enum.slice(from_col, (quantity * -1)..-1)
+
+    new_from_col = Enum.slice(from_col, 0..(quantity * -1 - 1))
+
+    new_to_col = Enum.at(original_stack, to) ++ to_move
+
+    original_stack
+    |> List.replace_at(from, new_from_col)
+    |> List.replace_at(to, new_to_col)
   end
 
-  # when is string
+  def problem_two() do
+    IO.puts("Day 5, Problem 2")
+    [stack, moves] = file() |> File.read!() |> String.split("\n\n", trim: true)
+
+    moves = moves_to_tuple_instructions(moves)
+
+    stack = [[] | stacks_to_list_of_lists(stack)]
+
+    Enum.reduce(moves, stack, fn move, stack -> move_all(stack, move) end)
+    |> Enum.map(&List.last/1)
+    |> Enum.filter(fn s -> not is_nil(s) end)
+    |> List.to_string()
+  end
 
   def get_cols(string, index) do
     string
     |> Enum.map(fn s -> String.at(s, index) end)
-    |> Enum.filter(fn s -> s != " " end)
+    |> Enum.reject(fn s -> s == " " or is_nil(s) end)
     |> Enum.reverse()
   end
 
@@ -59,13 +81,12 @@ defmodule AOC.DayFive do
     raw_cols =
       string
       |> String.split("\n", trim: true)
-      |> Enum.take(3)
+      |> Enum.drop(-1)
 
-    [1, 5, 9]
+    Enum.slice(Enum.to_list(1..100//4), 0..9)
     |> Enum.map(fn index -> get_cols(raw_cols, index) end)
   end
 
-  # when is string
   def moves_to_tuple_instructions(raw_move) do
     raw_move
     |> String.split("\n", trim: true)
@@ -78,13 +99,13 @@ defmodule AOC.DayFive do
 
   def run(:one) do
     res = AOC.DayFive.problem_one()
-    target = if @testing, do: "CMZ", else: ""
+    target = if @testing, do: "CMZ", else: "JRVNHHCSJ"
     IO.puts("#{res} - #{if res == target, do: "✅", else: "❌"}")
   end
 
   def run(:two) do
     res = AOC.DayFive.problem_two()
-    target = if @testing, do: "", else: ""
+    target = if @testing, do: "MCD", else: "GNFBSBJLH"
     IO.puts("#{res} - #{if res == target, do: "✅", else: "❌"}")
   end
 end
