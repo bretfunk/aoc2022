@@ -10,10 +10,7 @@ defmodule AOC.DayFive do
     [stack, moves] = file() |> File.read!() |> String.split("\n\n", trim: true)
 
     moves = moves_to_tuple_instructions(moves)
-
-    stack =
-      [[] | stacks_to_list_of_lists(stack)]
-      |> Kernel.++(List.duplicate([], 30))
+    stack = [[] | stacks_to_list_of_lists(stack)]
 
     Enum.reduce(moves, stack, fn move, stack -> move_one_by_one(stack, move) end)
     |> Enum.map(&List.last/1)
