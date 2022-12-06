@@ -10,7 +10,7 @@ defmodule AOC.DaySix do
 
     file()
     |> File.read!()
-    |> find_first_marker(%{}, 0, 4)
+    |> then(fn string -> find_first_marker(%{}, string, 0, 4) end)
   end
 
   def problem_two() do
@@ -18,10 +18,20 @@ defmodule AOC.DaySix do
 
     file()
     |> File.read!()
-    |> find_first_marker(%{}, 0, 14)
+    |> then(fn string -> find_first_marker(%{}, string, 0, 14) end)
   end
 
-  def remove_if_zero(letter_bank, letter) do
+  def add_letter(letter_bank, letter_to_add) do
+    letter_bank
+    |> Map.update(letter_to_add, 1, &(&1 + 1))
+  end
+
+  def remove_letter(letter_bank, letter_to_remove) do
+    letter_bank
+    |> Map.update(letter_to_remove, 0, &(&1 - 1))
+  end
+
+  def delete_if_zero(letter_bank, letter) do
     if Map.get(letter_bank, letter) == 0 do
       Map.delete(letter_bank, letter)
     else
@@ -29,26 +39,27 @@ defmodule AOC.DaySix do
     end
   end
 
-  def find_first_marker(string, letter_bank, index, message_length) do
-    letter_bank =
-      string
-      |> String.at(index)
-      |> then(fn letter -> Map.update(letter_bank, letter, 1, &(&1 + 1)) end)
+  def check_for_distinct(letter_bank, message_length) do
+    letter_bank
+    |> Enum.count()
+    |> Kernel.==(message_length)
+  end
+
+  def find_first_marker(letter_bank, string, index, message_length) do
+    letter_bank = add_letter(letter_bank, String.at(string, index))
 
     if index < message_length do
-      find_first_marker(string, letter_bank, index + 1, message_length)
+      find_first_marker(letter_bank, string, index + 1, message_length)
     else
-      letter_to_remove = String.at(string, index - message_length)
-
       letter_bank =
         letter_bank
-        |> Map.update(letter_to_remove, 0, &(&1 - 1))
-        |> remove_if_zero(letter_to_remove)
+        |> remove_letter(String.at(string, index - message_length))
+        |> delete_if_zero(String.at(string, index - message_length))
 
-      if Enum.count(letter_bank) == message_length do
+      if check_for_distinct(letter_bank, message_length) do
         index + 1
       else
-        find_first_marker(string, letter_bank, index + 1, message_length)
+        find_first_marker(letter_bank, string, index + 1, message_length)
       end
     end
   end
