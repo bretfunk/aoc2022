@@ -51,16 +51,17 @@ defmodule AOC.DaySix do
     if index < message_length do
       find_first_marker(letter_bank, string, index + 1, message_length)
     else
-      letter_bank =
+      letter_bank
+      |> remove_letter(String.at(string, index - message_length))
+      |> delete_if_zero(String.at(string, index - message_length))
+      |> then(fn letter_bank ->
         letter_bank
-        |> remove_letter(String.at(string, index - message_length))
-        |> delete_if_zero(String.at(string, index - message_length))
-
-      if check_for_distinct(letter_bank, message_length) do
-        index + 1
-      else
-        find_first_marker(letter_bank, string, index + 1, message_length)
-      end
+        |> check_for_distinct(message_length)
+        |> case do
+          true -> index + 1
+          _ -> find_first_marker(letter_bank, string, index + 1, message_length)
+        end
+      end)
     end
   end
 
